@@ -950,6 +950,287 @@ h1 {
   font-size: 0.8rem;
 }
 
+/* ── Sentence Length Histogram ──────────────────────────────────── */
+
+.histogram-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.histogram-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.histogram-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.histogram-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.histogram-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.histogram-dot-ref {
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+.histogram-dot-user {
+  background: var(--accent);
+}
+
+.histogram-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.histogram-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.histogram-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  width: 100%;
+  height: 100px;
+}
+
+.histogram-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.histogram-bar-ref {
+  background: var(--accent);
+  opacity: 0.35;
+}
+
+.histogram-bar-user {
+  background: var(--accent);
+}
+
+.histogram-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.histogram-axis-label {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* ── Settings Panel ────────────────────────────────────────────── */
+
+.settings-toggle {
+  margin-bottom: 0.5rem;
+}
+
+.settings-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.settings-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.settings-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.settings-input:focus {
+  border-color: var(--accent);
+}
+
+.settings-input::placeholder {
+  color: #a8a29e;
+}
+
+.settings-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.settings-key-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.settings-key-row .settings-input {
+  flex: 1;
+}
+
+.settings-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.settings-status {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.settings-status-ok {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+/* ── Rewrite Panel ────────────────────────────────────────────── */
+
+.rewrite-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rewrite-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.rewrite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.rewrite-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.rewrite-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rewrite-section {
+  position: relative;
+}
+
+.rewrite-section-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.rewrite-text {
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.rewrite-copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.rewrite-explanation {
+  padding-top: 0.5rem;
+}
+
+.rewrite-explanation p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.rewrite-hint {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.88rem;
+}
+
 @media (max-width: 640px) {
   .profile-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -957,5 +1238,13 @@ h1 {
 
   .deviation-table {
     font-size: 0.8rem;
+  }
+
+  .histogram-chart {
+    height: 80px;
+  }
+
+  .histogram-bars {
+    height: 70px;
   }
 }

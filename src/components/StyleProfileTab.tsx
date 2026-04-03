@@ -1,8 +1,11 @@
-import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis } from '@/types';
+import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis, LLMConfig } from '@/types';
 import { t } from '@/i18n';
 import { PDFUploader } from './PDFUploader';
 import { ProfileSummary } from './ProfileSummary';
 import { StyleDeviationView } from './StyleDeviationView';
+import { SentenceLengthChart } from './SentenceLengthChart';
+import { SettingsPanel } from './SettingsPanel';
+import { RewritePanel } from './RewritePanel';
 
 interface StyleProfileTabProps {
   language: Language;
@@ -22,6 +25,12 @@ interface StyleProfileTabProps {
   userResult: AnalysisResult | null;
   /** Style deviation analysis (null if not computed yet) */
   styleDeviations: StyleDeviationAnalysis | null;
+  /** LLM configuration */
+  llmConfig: LLMConfig;
+  onLLMConfigUpdate: (updates: Partial<LLMConfig>) => void;
+  isLLMConfigured: boolean;
+  /** User text for rewrite */
+  text: string;
 }
 
 export function StyleProfileTab({
@@ -35,6 +44,10 @@ export function StyleProfileTab({
   onClear,
   userResult,
   styleDeviations,
+  llmConfig,
+  onLLMConfigUpdate,
+  isLLMConfigured,
+  text,
 }: StyleProfileTabProps) {
   return (
     <div className="style-profile-tab">
@@ -61,6 +74,15 @@ export function StyleProfileTab({
         />
       )}
 
+      {/* Sentence length histogram — shown when profile exists */}
+      {mergedProfile && mergedProfile.sentenceLengths.length > 0 && (
+        <SentenceLengthChart
+          referenceLengths={mergedProfile.sentenceLengths}
+          userLengths={userResult?.stats.sentenceLengths}
+          language={language}
+        />
+      )}
+
       {/* Deviation diagnostics — shown when both profile and user analysis exist */}
       {mergedProfile && userResult && styleDeviations && (
         <StyleDeviationView analysis={styleDeviations} language={language} />
@@ -70,6 +92,24 @@ export function StyleProfileTab({
       {mergedProfile && !userResult && (
         <div className="style-hint">
           <p>{t('style.hint.analyzeFirst', language)}</p>
+        </div>
+      )}
+
+      {/* LLM Rewrite section — shown when deviations exist */}
+      {styleDeviations && styleDeviations.deviations.length > 0 && (
+        <div className="rewrite-section-wrapper">
+          <SettingsPanel
+            config={llmConfig}
+            onUpdate={onLLMConfigUpdate}
+            language={language}
+          />
+          <RewritePanel
+            text={text}
+            deviations={styleDeviations.deviations}
+            config={llmConfig}
+            isConfigured={isLLMConfigured}
+            language={language}
+          />
         </div>
       )}
     </div>

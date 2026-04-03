@@ -1,6 +1,6 @@
 # Humanize
 
-**Detect AI-typical patterns in your writing. Get actionable rewrite suggestions.**
+**Detect AI-typical patterns in your writing. Compare against reference styles. Get actionable diagnostics.**
 
 Humanize scans English and Chinese text for surface-level AI patterns — filler phrases, hedge words, overused connectors, template expressions, and passive voice — and highlights them with specific suggestions for improvement.
 
@@ -8,14 +8,16 @@ No ML model, no server calls, no login. Runs entirely in your browser.
 
 ## Features
 
-- **5 pattern categories** — filler, hedging, connectors, templates, passive voice
+- **5 pattern categories** — filler, hedging, connectors, templates, passive voice (35+ EN / 30+ ZH rules)
 - **Annotated highlighting** — color-coded inline markers with hover tooltips
-- **Actionable suggestions** — each highlight explains *why* it's flagged and *how* to fix it
-- **AI-likeness score** — 0–100 score based on pattern density, sentence uniformity, and more
-- **Text statistics** — word count, sentence variation coefficient, pattern breakdown
-- **English + Chinese** — separate pattern sets for each language
+- **AI-likeness score** — 0–100 based on pattern density, sentence uniformity, and more
+- **Before/After comparison** — side-by-side view to track improvement between drafts
+- **Style Profile** — upload reference PDFs from target journals/conferences, extract 8 quantitative style metrics, and see how your text deviates with severity levels and suggestions
+- **Sentence length histogram** — visual comparison of your sentence length distribution vs. the reference profile
+- **Export** — download diagnostic reports as JSON or Markdown
+- **English + Chinese** — separate pattern sets and localized UI for each language
 - **Offline-first** — everything runs client-side, your text never leaves the browser
-- **Responsive** — works on desktop and mobile
+- **Profile persistence** — style profiles saved to localStorage across page reloads
 
 ## Quick Start
 
@@ -61,27 +63,55 @@ console.log(result.stats);       // {wordCount, sentenceCount, coefficientOfVari
 
 ### Score Calculation
 
-The score (0–100) is a weighted composite of:
+The score (0–100, lower = more human-like) is a weighted composite of:
 - Pattern density relative to word count (40%)
 - Sentence length uniformity (25%)
 - Excess formal connectors (15%)
 - Filler phrase density (10%)
 - Template expression density (10%)
 
+### Style Profile
+
+Upload academic papers from your target venue. Humanize extracts 8 quantitative metrics from the reference texts:
+
+| Metric | What it measures |
+|--------|-----------------|
+| Avg sentence length | Words per sentence |
+| Passive voice ratio | % of sentences using passive constructions |
+| Connector frequency | Connectors per sentence |
+| Filler density | Filler phrases per 100 words |
+| Hedge density | Hedge words per 100 words |
+| Vocabulary diversity | Type-token ratio (unique/total words) |
+| Avg word length | Characters per word |
+| Sentences/paragraph | Average paragraph length |
+
+Profiles are merged across multiple documents and persisted in localStorage. PDF text extraction runs entirely in the browser using pdf.js (lazy-loaded — the 1.3MB worker only loads when you first upload a PDF).
+
 ## Architecture
 
 ```
 src/
-├── engine/              # Framework-agnostic core
-│   ├── analyzer.ts      # Main analyzeText() function
-│   ├── patterns/        # EN + ZH pattern definitions
-│   ├── scoring.ts       # Score calculation
-│   └── stats.ts         # Text statistics
-├── components/          # React UI
-├── hooks/               # React hooks
-├── i18n/                # Localization (EN + ZH)
-├── types/               # Shared TypeScript interfaces
-└── styles/              # CSS
+├── engine/                 # Framework-agnostic core (zero React deps)
+│   ├── analyzer.ts         # Main analyzeText() pipeline
+│   ├── scoring.ts          # Score calculation
+│   ├── stats.ts            # Text statistics
+│   ├── styleProfiler.ts    # Style profiling + deviation analysis
+│   └── patterns/           # EN + ZH pattern definitions
+├── components/             # React UI
+│   ├── App.tsx             # Root (tabs, state wiring)
+│   ├── AnnotatedText.tsx   # Highlighted text view
+│   ├── ComparisonView.tsx  # Before/after comparison
+│   ├── StyleProfileTab.tsx # Style profile container
+│   ├── PDFUploader.tsx     # Drag-and-drop PDF upload
+│   ├── ProfileSummary.tsx  # Metrics display
+│   ├── StyleDeviationView.tsx  # Deviation diagnostics
+│   ├── SentenceLengthChart.tsx # Histogram visualization
+│   └── ...
+├── hooks/                  # useAnalysis, useStyleProfile
+├── utils/                  # PDF extraction, export
+├── i18n/                   # Localization (EN + ZH)
+├── types/                  # Shared TypeScript interfaces
+└── styles/                 # CSS
 ```
 
 The engine has **zero React dependencies** — it can be used in CLI tools, browser extensions, or any other JavaScript environment.
@@ -90,22 +120,25 @@ The engine has **zero React dependencies** — it can be used in CLI tools, brow
 
 ```bash
 npm run dev          # Dev server
-npm test             # Run tests
-npm run test:coverage # Tests with coverage
+npm test             # Run tests (62 tests)
 npm run lint         # ESLint
-npm run type-check   # TypeScript
-npm run validate     # All checks
+npm run type-check   # TypeScript strict
+npm run validate     # All checks (lint + types + test + build)
 npm run build        # Production build
 ```
 
 ## Tech Stack
 
-- React 18 + TypeScript (strict mode)
-- Vite + SWC
-- Vitest + React Testing Library
-- ESLint + Prettier
-- GitHub Actions CI/CD
-- GitHub Pages deployment
+| Layer | Choice |
+|-------|--------|
+| Framework | React 18 |
+| Language | TypeScript (strict mode) |
+| Build | Vite + SWC |
+| Testing | Vitest + React Testing Library |
+| Linting | ESLint + Prettier |
+| CI/CD | GitHub Actions |
+| Deploy | GitHub Pages |
+| PDF | pdfjs-dist (lazy-loaded via dynamic import) |
 
 ## FAQ
 
@@ -116,23 +149,16 @@ No. It uses regex-based pattern matching with linguistically motivated rules.
 Yes. Everything runs in your browser. Nothing is sent to any server.
 
 **What languages are supported?**
-English and Simplified Chinese (v1.0).
+English and Simplified Chinese.
 
 **Can I use the engine in my own tool?**
-Yes. The `src/engine/` module has no framework dependencies. Import `analyzeText` directly.
+Yes. The `src/engine/` module has no framework dependencies. Import `analyzeText` or `extractStyleProfile` directly.
 
-## Roadmap
+## Limitations
 
-- [ ] Browser extension (Chrome, Firefox)
-- [ ] CLI tool (`npx humanize-cli check text.txt`)
-- [ ] Configurable rules UI
-- [ ] Before/after comparison mode
-- [ ] Export diagnostic report
-- [ ] More languages
+This is a heuristic, rule-based tool. It detects surface-level patterns, not deep semantic features. A low score doesn't guarantee the text is human-written, and a high score doesn't mean the text is bad — it means certain stylistic patterns correlate with AI-generated text.
 
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+The style profile compares quantitative metrics only. It cannot assess content quality, argument structure, or domain-specific conventions beyond what the pattern rules cover.
 
 ## License
 

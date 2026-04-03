@@ -1,16 +1,30 @@
-import * as pdfjsLib from 'pdfjs-dist';
+/**
+ * PDF text extraction using pdfjs-dist.
+ * Uses dynamic import to lazy-load pdfjs-dist (~1.3MB) only when needed.
+ */
 
-// Configure worker source — use the bundled worker from pdfjs-dist
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+let pdfjsPromise: Promise<typeof import('pdfjs-dist')> | null = null;
+
+/** Lazy-load pdfjs-dist and configure worker */
+function getPdfjs() {
+  if (!pdfjsPromise) {
+    pdfjsPromise = import('pdfjs-dist').then((pdfjsLib) => {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.mjs',
+        import.meta.url,
+      ).toString();
+      return pdfjsLib;
+    });
+  }
+  return pdfjsPromise;
+}
 
 /**
  * Extract plain text content from a PDF file.
  * Uses pdfjs-dist for client-side extraction (no server required).
  */
 export async function extractPDFText(file: File): Promise<string> {
+  const pdfjsLib = await getPdfjs();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 

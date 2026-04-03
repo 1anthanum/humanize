@@ -133,6 +133,7 @@ export function extractStyleProfile(text: string, language: Language): StyleProf
     avgSentencesPerParagraph: buildMetric([sentencesPerParagraph]),
     documentCount: 1,
     totalWords: wordCount,
+    sentenceLengths: stats.sentenceLengths,
   };
 }
 
@@ -167,6 +168,7 @@ export function mergeProfiles(profiles: StyleProfile[]): StyleProfile {
     ...(merged as Pick<StyleProfile, StyleMetricKey>),
     documentCount: profiles.reduce((sum, p) => sum + p.documentCount, 0),
     totalWords: profiles.reduce((sum, p) => sum + p.totalWords, 0),
+    sentenceLengths: profiles.flatMap((p) => p.sentenceLengths),
   };
 }
 

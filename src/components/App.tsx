@@ -3,6 +3,7 @@ import type { Language, StyleDeviationAnalysis } from '@/types';
 import { t } from '@/i18n';
 import { useAnalysis } from '@/hooks/useAnalysis';
 import { useStyleProfile } from '@/hooks/useStyleProfile';
+import { useLLMConfig } from '@/hooks/useLLMConfig';
 import { compareToProfile } from '@/engine/styleProfiler';
 import { Editor } from './Editor';
 import { ScoreBar } from './ScoreBar';
@@ -47,6 +48,7 @@ export function App() {
     clearProfiles,
     hasProfile,
   } = useStyleProfile();
+  const { config: llmConfig, setConfig: setLLMConfig, isConfigured: isLLMConfigured } = useLLMConfig();
 
   // Compute style deviations when both profile and result exist
   const styleDeviations = useMemo<StyleDeviationAnalysis | null>(() => {
@@ -81,9 +83,9 @@ export function App() {
 
   const handleRemovePDF = useCallback(
     (index: number) => {
-      removePDF(index, language);
+      removePDF(index);
     },
-    [removePDF, language],
+    [removePDF],
   );
 
   return (
@@ -175,6 +177,10 @@ export function App() {
                 onClear={clearProfiles}
                 userResult={result}
                 styleDeviations={styleDeviations}
+                llmConfig={llmConfig}
+                onLLMConfigUpdate={setLLMConfig}
+                isLLMConfigured={isLLMConfigured}
+                text={text}
               />
             </div>
           )}
