@@ -491,4 +491,471 @@ h1 {
   }
 }
 
-/* Vite declaration */
+/* Results header */
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.results-header .score-bar {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Export */
+.export-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+}
+
+.export-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  min-width: 180px;
+  overflow: hidden;
+}
+
+.export-option {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.export-option:hover {
+  background: #f5f5f4;
+}
+
+.export-option:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Comparison */
+.comparison-delta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.comparison-delta-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.comparison-delta-value {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.comparison-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.comparison-col {
+  min-width: 0;
+}
+
+.comparison-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.comparison-col-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.comparison-score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.comparison-score-value {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.comparison-score-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.comparison-patterns {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.comparison-input .editor-textarea {
+  min-height: 150px;
+}
+
+@media (max-width: 640px) {
+  .comparison-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ── Style Profile ─────────────────────────────────────────────── */
+
+.style-profile-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* PDF Upload Zone */
+.pdf-upload {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--surface);
+}
+
+.pdf-upload:hover {
+  border-color: var(--accent);
+  background: var(--info-bg);
+}
+
+.pdf-upload-active {
+  border-color: var(--accent);
+  background: var(--info-bg);
+  transform: scale(1.01);
+}
+
+.pdf-upload-input {
+  display: none;
+}
+
+.pdf-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pdf-upload-icon {
+  font-size: 2rem;
+}
+
+.pdf-upload-text {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.pdf-upload-hint {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.pdf-upload-processing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--accent);
+}
+
+.pdf-upload-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Style Error */
+.style-error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Style Hint */
+.style-hint {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Profile Summary */
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-files {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.profile-files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.profile-files-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.profile-files-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.profile-file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.profile-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-file-words {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.profile-file-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  padding: 0 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+.profile-file-remove:hover {
+  color: var(--error-text);
+  background: var(--error-bg);
+}
+
+/* Profile Metrics Grid */
+.profile-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.profile-metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.profile-metric-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.profile-metric-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-metric-range {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Deviation View */
+.deviation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deviation-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.deviation-empty {
+  text-align: center;
+  padding: 2rem;
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: 8px;
+}
+
+.deviation-empty h3 {
+  margin: 0 0 0.5rem;
+  color: var(--success-text);
+}
+
+.deviation-empty p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.deviation-table-wrap {
+  overflow-x: auto;
+}
+
+.deviation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.deviation-table th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+.deviation-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.deviation-row:hover {
+  background: var(--bg);
+}
+
+.deviation-metric {
+  font-weight: 500;
+}
+
+.deviation-user {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.deviation-ref {
+  font-variant-numeric: tabular-nums;
+}
+
+.deviation-ref-range {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.deviation-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.deviation-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.deviation-suggestions-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0;
+}
+
+/* Tab disabled state */
+.tab-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Btn small variant */
+.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .profile-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .deviation-table {
+    font-size: 0.8rem;
+  }
+}
