@@ -47,6 +47,8 @@ export function App() {
     removePDF,
     clearProfiles,
     hasProfile,
+    loadPreset,
+    activePresetName,
   } = useStyleProfile();
   const { config: llmConfig, setConfig: setLLMConfig, isConfigured: isLLMConfigured } = useLLMConfig();
 
@@ -181,6 +183,8 @@ export function App() {
                 onLLMConfigUpdate={setLLMConfig}
                 isLLMConfigured={isLLMConfigured}
                 text={text}
+                onLoadPreset={loadPreset}
+                activePresetName={activePresetName}
               />
             </div>
           )}

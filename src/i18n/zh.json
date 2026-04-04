@@ -80,5 +80,19 @@
   "rewrite.result": "改写建议",
   "rewrite.copy": "复制",
   "rewrite.explanation": "修改说明",
-  "rewrite.configureFirst": "请先配置 API 密钥和代理 URL，以启用 AI 改写功能。"
+  "rewrite.configureFirst": "请先配置 API 密钥和代理 URL，以启用 AI 改写功能。",
+  "preset.title": "风格预设",
+  "preset.save": "保存为预设",
+  "preset.namePlaceholder": "例如：CHI 2024 最佳论文",
+  "preset.confirm": "保存",
+  "preset.cancel": "取消",
+  "preset.delete": "删除预设",
+  "preset.empty": "暂无保存的预设。上传 PDF 并保存风格档案来创建预设。",
+  "preset.active": "当前预设",
+  "preset.docs": "篇文档",
+  "preset.words": "词",
+  "preset.files": "文件",
+  "preset.papers": "篇论文",
+  "preset.builtinLabel": "会议风格档案",
+  "preset.customLabel": "你保存的预设"
 }

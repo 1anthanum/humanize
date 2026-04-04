@@ -80,5 +80,19 @@
   "rewrite.result": "Suggested rewrite",
   "rewrite.copy": "Copy",
   "rewrite.explanation": "What changed",
-  "rewrite.configureFirst": "Configure your API key and proxy URL above to enable AI-powered rewriting."
+  "rewrite.configureFirst": "Configure your API key and proxy URL above to enable AI-powered rewriting.",
+  "preset.title": "Style Presets",
+  "preset.save": "Save as Preset",
+  "preset.namePlaceholder": "e.g., CHI 2024 Best Papers",
+  "preset.confirm": "Save",
+  "preset.cancel": "Cancel",
+  "preset.delete": "Delete preset",
+  "preset.empty": "No saved presets. Upload PDFs and save a profile to create one.",
+  "preset.active": "Active preset",
+  "preset.docs": "docs",
+  "preset.words": "words",
+  "preset.files": "files",
+  "preset.papers": "papers",
+  "preset.builtinLabel": "Conference Profiles",
+  "preset.customLabel": "Your Saved Presets"
 }

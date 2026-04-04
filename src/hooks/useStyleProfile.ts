@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { Language, StyleProfile } from '@/types';
+import type { Language, StyleProfile, StylePreset } from '@/types';
 import { extractStyleProfile, mergeProfiles } from '@/engine/styleProfiler';
 import { extractPDFText, isPDFFile } from '@/utils/pdfExtraction';
 
@@ -65,6 +65,10 @@ interface UseStyleProfileReturn {
   clearProfiles: () => void;
   /** Whether a profile is available */
   hasProfile: boolean;
+  /** Load a preset profile (replaces current uploads) */
+  loadPreset: (preset: StylePreset) => void;
+  /** Name of the currently loaded preset, if any */
+  activePresetName: string | null;
 }
 
 export function useStyleProfile(): UseStyleProfileReturn {
@@ -79,6 +83,7 @@ export function useStyleProfile(): UseStyleProfileReturn {
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activePresetName, setActivePresetName] = useState<string | null>(null);
 
   // Persist whenever profiles change (via effect to avoid stale closures)
   const [shouldPersist, setShouldPersist] = useState(false);
@@ -163,7 +168,24 @@ export function useStyleProfile(): UseStyleProfileReturn {
     setUploadedPDFs([]);
     setMergedProfile(null);
     setError(null);
+    setActivePresetName(null);
     clearPersistedState();
+  }, []);
+
+  const loadPreset = useCallback((preset: StylePreset) => {
+    // Replace current profile with preset's profile
+    setProfiles([preset.profile]);
+    setUploadedPDFs(
+      preset.sourceFiles.map((name) => ({ name, wordCount: 0 })),
+    );
+    setMergedProfile(preset.profile);
+    setActivePresetName(preset.name);
+    setError(null);
+    // Persist the loaded preset as current state
+    persistState(
+      [preset.profile],
+      preset.sourceFiles.map((name) => ({ name, wordCount: 0 })),
+    );
   }, []);
 
   return {
@@ -175,5 +197,7 @@ export function useStyleProfile(): UseStyleProfileReturn {
     removePDF,
     clearProfiles,
     hasProfile: mergedProfile !== null,
+    loadPreset,
+    activePresetName,
   };
 }

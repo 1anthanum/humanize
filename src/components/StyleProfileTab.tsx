@@ -1,4 +1,4 @@
-import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis, LLMConfig } from '@/types';
+import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis, LLMConfig, StylePreset } from '@/types';
 import { t } from '@/i18n';
 import { PDFUploader } from './PDFUploader';
 import { ProfileSummary } from './ProfileSummary';
@@ -6,6 +6,7 @@ import { StyleDeviationView } from './StyleDeviationView';
 import { SentenceLengthChart } from './SentenceLengthChart';
 import { SettingsPanel } from './SettingsPanel';
 import { RewritePanel } from './RewritePanel';
+import { PresetSelector } from './PresetSelector';
 
 interface StyleProfileTabProps {
   language: Language;
@@ -31,6 +32,9 @@ interface StyleProfileTabProps {
   isLLMConfigured: boolean;
   /** User text for rewrite */
   text: string;
+  /** Preset support */
+  onLoadPreset: (preset: StylePreset) => void;
+  activePresetName: string | null;
 }
 
 export function StyleProfileTab({
@@ -48,9 +52,26 @@ export function StyleProfileTab({
   onLLMConfigUpdate,
   isLLMConfigured,
   text,
+  onLoadPreset,
+  activePresetName,
 }: StyleProfileTabProps) {
   return (
     <div className="style-profile-tab">
+      {/* Preset selector — load/save style profiles */}
+      <PresetSelector
+        language={language}
+        currentProfile={mergedProfile}
+        currentFiles={uploadedPDFs.map((p) => p.name)}
+        onLoadPreset={onLoadPreset}
+      />
+
+      {/* Active preset indicator */}
+      {activePresetName && (
+        <div className="preset-active-badge">
+          {t('preset.active', language)}: <strong>{activePresetName}</strong>
+        </div>
+      )}
+
       {/* Upload section — always visible so user can add more PDFs */}
       <PDFUploader language={language} isProcessing={isProcessing} onUpload={onUpload} />
 

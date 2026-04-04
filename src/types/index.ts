@@ -125,6 +125,22 @@ export interface StyleDeviationAnalysis {
   suggestions: Issue[];
 }
 
+// ── Style Preset Types ──────────────────────────────────────────────
+
+/** A saved style profile preset (e.g., "IEEE VIS 2024") */
+export interface StylePreset {
+  /** Unique ID (timestamp-based) */
+  id: string;
+  /** Human-readable name (e.g., "CHI 2024 Best Papers") */
+  name: string;
+  /** The merged StyleProfile */
+  profile: StyleProfile;
+  /** Source PDF file names used to build the profile */
+  sourceFiles: string[];
+  /** ISO date string when preset was created */
+  createdAt: string;
+}
+
 // ── LLM Integration Types ────────────────────────────────────────────
 
 /** Supported LLM providers */
