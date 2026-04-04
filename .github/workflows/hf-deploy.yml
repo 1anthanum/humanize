@@ -1,0 +1,55 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # HF Spaces serves from root (/), not a subpath
+      - run: npx vite build --base=/
+        env:
+          NODE_ENV: production
+
+      # HF Static Spaces requires this metadata file in the repo root
+      - name: Add HF Spaces metadata
+        run: |
+          cat > dist/README.md << 'HFEOF'
+          ---
+          title: Humanize
+          emoji: ✍️
+          colorFrom: gray
+          colorTo: blue
+          sdk: static
+          pinned: false
+          license: mit
+          short_description: Detect AI-typical patterns in academic writing
+          ---
+          HFEOF
+
+      - name: Push to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          cd dist
+          git init
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add .
+          git commit -m "Deploy from GitHub Actions"
+          git push --force https://huggingface:${HF_TOKEN}@huggingface.co/spaces/${{ vars.HF_REPO_ID }} main
