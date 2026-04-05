@@ -1,0 +1,12 @@
+name = "humanize-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Rate limiting KV namespace (create with: wrangler kv namespace create RATE_LIMIT)
+# Uncomment after creating the namespace and replace the id:
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "YOUR_KV_NAMESPACE_ID"
+
+[vars]
+RATE_LIMIT_PER_HOUR = "10"
