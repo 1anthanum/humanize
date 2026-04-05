@@ -61,6 +61,8 @@ export interface PatternSet {
   hedge: PatternRule[];
   connector: PatternRule[];
   template: PatternRule[];
+  /** Single AI-buzzwords that only flag when co-occurring with 2+ other signals */
+  softFiller: PatternRule[];
 }
 
 // ── Style Profile Types ──────────────────────────────────────────────

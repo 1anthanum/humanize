@@ -36,45 +36,6 @@ export const EN_PATTERNS: PatternSet = {
       tip: "AI-typical opener — just start your analysis",
     },
     {
-      re: /\bdelve into\b/gi,
-      tip: "'delve' is heavily associated with AI text — use 'examine' or 'explore'",
-    },
-    {
-      re: /\bleverage\b/gi,
-      tip: "'leverage' as a verb is AI-typical — try 'use', 'apply', or 'build on'",
-    },
-    {
-      re: /\bfoster(?:s|ing)?\b/gi,
-      tip: "'foster' is overused in AI text — try 'encourage', 'support', or be specific",
-    },
-    {
-      re: /\bseamless(?:ly)?\b/gi,
-      tip: "'seamless(ly)' is AI-typical — describe the actual experience",
-    },
-    {
-      re: /\bholistic(?:ally)?\b/gi,
-      tip: "'holistic' is vague and AI-typical — specify what you mean",
-    },
-    { re: /\bsynerg(?:y|ies|istic)\b/gi, tip: 'Buzzword — explain the specific interaction' },
-    { re: /\bparadigm(?:s| shift)?\b/gi, tip: 'Often AI filler — name the specific change' },
-    {
-      re: /\btransformative\b/gi,
-      tip: "'transformative' is overused — describe the actual transformation",
-    },
-    {
-      re: /\bgroundbreaking\b/gi,
-      tip: 'Hyperbolic — let the results speak or explain what\'s actually new',
-    },
-    {
-      re: /\bcutting-edge\b/gi,
-      tip: 'AI cliché — describe what makes it novel specifically',
-    },
-    {
-      re: /\bstate-of-the-art\b/gi,
-      tip: 'Overused in academic context — cite the actual SOTA result',
-    },
-    { re: /\boverall,?\b/gi, tip: "'Overall' often signals summary filler — try being specific" },
-    {
       re: /\bI hope this (?:email |message )?finds you well\b/gi,
       tip: 'Template greeting — personalize or skip',
     },
@@ -95,15 +56,6 @@ export const EN_PATTERNS: PatternSet = {
       re: /\bnavigat(?:e|ing) (?:the )?(?:complexit(?:y|ies)|challenges|landscape)\b/gi,
       tip: 'AI-typical phrasing — describe the specific difficulty',
     },
-    {
-      re: /\brobust\b/gi,
-      tip: "'robust' is AI-overused — quantify or use a more precise term",
-    },
-    {
-      re: /\bempow(?:er|ers|ering)\b/gi,
-      tip: "'empower' is AI-typical — describe the specific capability gained",
-    },
-    { re: /\bstakeholders?\b/gi, tip: 'Vague — name the specific groups' },
     {
       re: /\bin conclusion\b/gi,
       tip: 'Mechanical transition — your conclusion should be clear from context',
@@ -191,6 +143,107 @@ export const EN_PATTERNS: PatternSet = {
     {
       re: /\bopen(?:s|ing)? (?:up )?(?:new )?(?:avenues|doors|possibilities)\b/gi,
       tip: 'Vague — name the specific opportunities',
+    },
+    // AI code explanation patterns (ChatGPT-typical)
+    {
+      re: /\bIt works by (?:\w+ ?){1,3}ing\b/gi,
+      tip: 'AI code-explanation template — describe the mechanism more directly',
+    },
+    {
+      re: /\bThis (?:approach|implementation|method|function|code) (?:ensures|handles|provides|allows)\b/gi,
+      tip: 'AI code-explanation template — show what happens rather than narrate',
+    },
+    {
+      re: /\bIt is worth mentioning that\b/gi,
+      tip: 'Filler — if worth mentioning, just mention it',
+    },
+    {
+      re: /\bLet'?s (?:break (?:this|it) down|walk through|take a (?:closer )?look)\b/gi,
+      tip: "AI-typical tutorial phrasing — just start explaining",
+    },
+    {
+      re: /\bAs (?:you can|we can) see\b/gi,
+      tip: 'Filler — the reader can already see; state the point',
+    },
+  ],
+
+  softFiller: [
+    {
+      re: /\bdelve into\b/gi,
+      tip: "'delve' is heavily associated with AI text — use 'examine' or 'explore'",
+    },
+    {
+      re: /\bleverage\b/gi,
+      tip: "'leverage' as a verb is AI-typical — try 'use', 'apply', or 'build on'",
+    },
+    {
+      re: /\bfoster(?:s|ing)?\b/gi,
+      tip: "'foster' is overused in AI text — try 'encourage', 'support', or be specific",
+    },
+    {
+      re: /\bseamless(?:ly)?\b/gi,
+      tip: "'seamless(ly)' is AI-typical — describe the actual experience",
+    },
+    {
+      re: /\bholistic(?:ally)?\b/gi,
+      tip: "'holistic' is vague and AI-typical — specify what you mean",
+    },
+    { re: /\bsynerg(?:y|ies|istic)\b/gi, tip: 'Buzzword — explain the specific interaction' },
+    { re: /\bparadigm(?:s| shift)?\b/gi, tip: 'Often AI filler — name the specific change' },
+    {
+      re: /\btransformative\b/gi,
+      tip: "'transformative' is overused — describe the actual transformation",
+    },
+    {
+      re: /\bgroundbreaking\b/gi,
+      tip: 'Hyperbolic — let the results speak or explain what\'s actually new',
+    },
+    {
+      re: /\bcutting-edge\b/gi,
+      tip: 'AI cliché — describe what makes it novel specifically',
+    },
+    {
+      re: /\bstate-of-the-art\b/gi,
+      tip: 'Overused in academic context — cite the actual SOTA result',
+    },
+    { re: /\boverall,?\b/gi, tip: "'Overall' often signals summary filler — try being specific" },
+    {
+      re: /\brobust\b/gi,
+      tip: "'robust' is AI-overused — quantify or use a more precise term",
+    },
+    {
+      re: /\bempow(?:er|ers|ering)\b/gi,
+      tip: "'empower' is AI-typical — describe the specific capability gained",
+    },
+    { re: /\bstakeholders?\b/gi, tip: 'Vague — name the specific groups' },
+    // Marketing buzzwords (common in AI-generated promotional copy)
+    {
+      re: /\brevolutionary\b/gi,
+      tip: "'revolutionary' is AI-marketing hyperbole — describe the specific improvement",
+    },
+    {
+      re: /\bunprecedented\b/gi,
+      tip: "'unprecedented' is overused — is it truly first-of-its-kind? Cite evidence",
+    },
+    {
+      re: /\bcomprehensive\b/gi,
+      tip: "'comprehensive' is vague — list what it actually covers",
+    },
+    {
+      re: /\binnovative\b/gi,
+      tip: "'innovative' is overused — describe what's novel specifically",
+    },
+    {
+      re: /\bstreamline(?:s|d)?\b/gi,
+      tip: "'streamline' is AI-typical — describe the specific efficiency gain",
+    },
+    {
+      re: /\bgame[- ]?changer\b/gi,
+      tip: 'AI-marketing buzzword — describe the concrete impact instead',
+    },
+    {
+      re: /\bnext[- ]?gen(?:eration)?\b/gi,
+      tip: 'Marketing filler — describe the actual advancement',
     },
   ],
 };

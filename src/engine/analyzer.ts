@@ -19,6 +19,19 @@ const PASSIVE_RE =
 const ZH_PASSIVE_RE = /被(?:广泛|普遍|认为|视为|用于|证明|发现|观察|设计|提出)/g;
 
 /**
+ * Sequential enumeration markers at sentence/paragraph starts.
+ * Matches: "First, ... Second, ... Third, ..." etc.
+ * Allows variable whitespace after sentence boundaries (handles copy-paste artifacts).
+ * Only flagged when 3+ sequential markers appear in the text.
+ */
+const ENUM_MARKERS_EN =
+  /(?:^|(?<=\.)\s*|(?<=\n)\s*)(?:First(?:ly)?|Second(?:ly)?|Third(?:ly)?|Fourth(?:ly)?|Fifth(?:ly)?|Finally|Lastly|In addition),/gm;
+
+/** Chinese sequential enumeration markers */
+const ENUM_MARKERS_ZH =
+  /(?:^|(?<=[。\n])\s*)(?:首先|其次|第三|第四|最后|此外)[，,]/gm;
+
+/**
  * Find all matches for a set of pattern rules in the text.
  */
 function findMatches(text: string, rules: PatternRule[], type: PatternType): Highlight[] {
@@ -60,6 +73,39 @@ function findPassive(text: string, language: Language): Highlight[] {
     });
   }
   return highlights;
+}
+
+/**
+ * Detect sequential enumeration patterns (e.g., "First, ... Second, ... Third, ...").
+ * Only flags when 3+ sequential markers are found — a strong structural AI signal.
+ */
+function findEnumeration(text: string, language: Language): Highlight[] {
+  const re = language === 'zh'
+    ? new RegExp(ENUM_MARKERS_ZH.source, ENUM_MARKERS_ZH.flags)
+    : new RegExp(ENUM_MARKERS_EN.source, ENUM_MARKERS_EN.flags);
+
+  const tip = language === 'zh'
+    ? '序列枚举模式（首先…其次…最后…）——AI典型的列举结构，考虑用段落自然衔接替代'
+    : 'Sequential enumeration pattern (First… Second… Third…) — a strong AI structural signal. Consider flowing prose instead of a numbered list.';
+
+  const matches: Highlight[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text)) !== null) {
+    // Trim leading whitespace so highlight covers only the keyword
+    const raw = match[0];
+    const trimmed = raw.replace(/^\s+/, '');
+    const trimOffset = raw.length - trimmed.length;
+    matches.push({
+      start: match.index + trimOffset,
+      end: match.index + raw.length,
+      type: 'connector',
+      tip,
+      text: trimmed,
+    });
+  }
+
+  // Only flag if 3+ sequential markers found — pattern, not individual words
+  return matches.length >= 3 ? matches : [];
 }
 
 /**
@@ -218,14 +264,21 @@ export function analyzeText(text: string, language: Language = 'en'): AnalysisRe
 
   const patterns = getPatterns(language);
 
-  // Find all pattern matches
-  const allHighlights: Highlight[] = [
+  // First pass: strong patterns (always flagged)
+  const strongHighlights: Highlight[] = [
     ...findMatches(text, patterns.filler, 'filler'),
     ...findMatches(text, patterns.hedge, 'hedge'),
     ...findMatches(text, patterns.connector, 'connector'),
     ...findMatches(text, patterns.template, 'template'),
     ...findPassive(text, language),
+    ...findEnumeration(text, language),
   ];
+
+  // Second pass: soft fillers only included when 2+ strong signals exist
+  const softMatches = findMatches(text, patterns.softFiller, 'filler');
+  const allHighlights = strongHighlights.length >= 2
+    ? [...strongHighlights, ...softMatches]
+    : strongHighlights;
 
   // Resolve overlapping highlights
   const highlights = resolveOverlaps(allHighlights);

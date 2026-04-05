@@ -81,6 +81,125 @@ describe('analyzeText', () => {
     });
   });
 
+  describe('sequential enumeration detection', () => {
+    it('flags First/Second/Third pattern as connectors when 3+ found', () => {
+      const text =
+        'First, we collect the data. Second, we clean it. Third, we train the model. Finally, we evaluate.';
+      const result = analyzeText(text, 'en');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('Sequential enumeration'),
+      );
+      expect(enumHighlights.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('does NOT flag when fewer than 3 sequential markers', () => {
+      const text = 'First, we define the problem. Second, we build the solution. The rest follows naturally.';
+      const result = analyzeText(text, 'en');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('Sequential enumeration'),
+      );
+      expect(enumHighlights).toHaveLength(0);
+    });
+
+    it('detects Firstly/Secondly/Thirdly variants', () => {
+      const text =
+        'Firstly, the design is modern. Secondly, the implementation is efficient. Thirdly, the tests pass. Lastly, we ship.';
+      const result = analyzeText(text, 'en');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('Sequential enumeration'),
+      );
+      expect(enumHighlights.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('detects Chinese sequential enumeration', () => {
+      const text =
+        '首先，我们收集数据。其次，我们清洗数据。第三，我们训练模型。最后，我们评估结果。';
+      const result = analyzeText(text, 'zh');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('序列枚举'),
+      );
+      expect(enumHighlights.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('handles double-space after periods (copy-paste artifacts)', () => {
+      const text =
+        'Step one is clear.  First, collect data.  Second, clean it.  Third, train the model.';
+      const result = analyzeText(text, 'en');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('Sequential enumeration'),
+      );
+      expect(enumHighlights.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('highlight text does not include leading whitespace', () => {
+      const text =
+        'Setup is done. First, we start. Second, we continue. Third, we finish.';
+      const result = analyzeText(text, 'en');
+      const enumHighlights = result.highlights.filter(
+        (h) => h.type === 'connector' && h.tip.includes('Sequential enumeration'),
+      );
+      for (const h of enumHighlights) {
+        expect(h.text).not.toMatch(/^\s/);
+      }
+    });
+  });
+
+  describe('AI code explanation patterns', () => {
+    it('detects "It works by iterating" pattern', () => {
+      const text = 'It works by iterating through each element in the array.';
+      const result = analyzeText(text, 'en');
+      expect(result.counts.template).toBeGreaterThanOrEqual(1);
+    });
+
+    it('detects "This approach ensures" pattern', () => {
+      const text = 'This approach ensures that all edge cases are handled correctly.';
+      const result = analyzeText(text, 'en');
+      expect(result.counts.template).toBeGreaterThanOrEqual(1);
+    });
+
+    it('detects "Let\'s break this down" pattern', () => {
+      const text = "Let's break this down step by step.";
+      const result = analyzeText(text, 'en');
+      expect(result.counts.template).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('soft filler gating', () => {
+    it('does NOT flag isolated soft fillers like "fosters" when no other signals', () => {
+      const text = 'The program fosters collaboration among team members.';
+      const result = analyzeText(text, 'en');
+      const fosterHighlight = result.highlights.find((h) => h.text.toLowerCase().includes('foster'));
+      expect(fosterHighlight).toBeUndefined();
+    });
+
+    it('does NOT flag "robust" alone in technical context', () => {
+      const text = 'The system provides a robust interface for data entry.';
+      const result = analyzeText(text, 'en');
+      const robustHighlight = result.highlights.find((h) => h.text.toLowerCase().includes('robust'));
+      expect(robustHighlight).toBeUndefined();
+    });
+
+    it('DOES flag soft fillers when co-occurring with other AI signals', () => {
+      const text =
+        'Furthermore, the framework fosters robust engagement. Moreover, it leverages cutting-edge techniques to empower stakeholders.';
+      const result = analyzeText(text, 'en');
+      // With strong signals (Furthermore, Moreover), soft fillers should appear
+      const softHits = result.highlights.filter((h) =>
+        ['fosters', 'robust', 'leverages', 'cutting-edge', 'empower', 'stakeholders'].some((w) =>
+          h.text.toLowerCase().includes(w),
+        ),
+      );
+      expect(softHits.length).toBeGreaterThan(0);
+    });
+
+    it('does NOT flag Chinese soft fillers alone', () => {
+      const text = '这次数字化转型帮助了很多企业。';
+      const result = analyzeText(text, 'zh');
+      const softHit = result.highlights.find((h) => h.text.includes('转型'));
+      expect(softHit).toBeUndefined();
+    });
+  });
+
   describe('Chinese', () => {
     it('detects Chinese filler phrases', () => {
       const result = analyzeText('值得注意的是，这个方法在当今快速发展的时代有重要意义。', 'zh');
