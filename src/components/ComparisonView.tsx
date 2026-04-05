@@ -1,15 +1,18 @@
-import { useState, useCallback } from 'react';
-import type { AnalysisResult, Language } from '@/types';
+import { useState, useCallback, useMemo } from 'react';
+import type { AnalysisResult, Language, StyleProfile, MetricDiff } from '@/types';
 import { analyzeText } from '@/engine/analyzer';
 import { getScoreColor } from '@/engine/scoring';
+import { computeStyleDiff } from '@/engine/styleMetricsDiff';
 import { t } from '@/i18n';
 import { AnnotatedText } from './AnnotatedText';
 import { Legend } from './Legend';
+import { StyleDiffTable } from './StyleDiffTable';
 
 interface ComparisonViewProps {
   originalText: string;
   originalResult: AnalysisResult;
   language: Language;
+  referenceProfile?: StyleProfile;
 }
 
 function ScoreBadge({ score, label }: { score: number; label: string }) {
@@ -35,7 +38,7 @@ function PatternSummary({ result, language }: { result: AnalysisResult; language
   );
 }
 
-export function ComparisonView({ originalText, originalResult, language }: ComparisonViewProps) {
+export function ComparisonView({ originalText, originalResult, language, referenceProfile }: ComparisonViewProps) {
   const [revisedText, setRevisedText] = useState('');
   const [revisedResult, setRevisedResult] = useState<AnalysisResult | null>(null);
 
@@ -48,6 +51,12 @@ export function ComparisonView({ originalText, originalResult, language }: Compa
   }, [revisedText, language]);
 
   const delta = revisedResult ? revisedResult.score - originalResult.score : null;
+
+  // Compute style metrics diff when both texts are analyzed
+  const styleDiffs = useMemo<MetricDiff[]>(() => {
+    if (!revisedResult || !revisedText.trim()) return [];
+    return computeStyleDiff(originalText, revisedText, language, referenceProfile);
+  }, [originalText, revisedText, revisedResult, language, referenceProfile]);
 
   return (
     <div className="comparison">
@@ -114,6 +123,11 @@ export function ComparisonView({ originalText, originalResult, language }: Compa
           )}
         </div>
       </div>
+
+      {/* Style metrics diff table */}
+      {styleDiffs.length > 0 && (
+        <StyleDiffTable diffs={styleDiffs} language={language} />
+      )}
     </div>
   );
 }

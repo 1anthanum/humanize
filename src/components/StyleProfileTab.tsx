@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis, LLMConfig, StylePreset } from '@/types';
+import type { SectionDeviation } from '@/types';
 import { t } from '@/i18n';
 import { PDFUploader } from './PDFUploader';
 import { ProfileSummary } from './ProfileSummary';
@@ -7,6 +9,10 @@ import { SentenceLengthChart } from './SentenceLengthChart';
 import { SettingsPanel } from './SettingsPanel';
 import { RewritePanel } from './RewritePanel';
 import { PresetSelector } from './PresetSelector';
+import { SectionAnalysisView } from './SectionAnalysisView';
+import { AbstractStructureView } from './AbstractStructureView';
+import { analyzeSections, compareSections } from '@/engine/sectionAnalyzer';
+import { analyzeAbstract } from '@/engine/abstractAnalyzer';
 
 interface StyleProfileTabProps {
   language: Language;
@@ -55,6 +61,27 @@ export function StyleProfileTab({
   onLoadPreset,
   activePresetName,
 }: StyleProfileTabProps) {
+  // Compute section-level deviations when both reference and user data exist
+  const sectionDeviations = useMemo<SectionDeviation[]>(() => {
+    if (!mergedProfile?.sectionProfile || !userResult || !text) return [];
+    try {
+      const userSections = analyzeSections(text, language);
+      return compareSections(userSections, mergedProfile.sectionProfile);
+    } catch {
+      return [];
+    }
+  }, [mergedProfile, userResult, text, language]);
+
+  // Compute abstract structure analysis
+  const abstractAnalysis = useMemo(() => {
+    if (!text || !userResult) return null;
+    try {
+      return analyzeAbstract(text, language);
+    } catch {
+      return null;
+    }
+  }, [text, userResult, language]);
+
   return (
     <div className="style-profile-tab">
       {/* Preset selector — load/save style profiles */}
@@ -107,6 +134,21 @@ export function StyleProfileTab({
       {/* Deviation diagnostics — shown when both profile and user analysis exist */}
       {mergedProfile && userResult && styleDeviations && (
         <StyleDeviationView analysis={styleDeviations} language={language} />
+      )}
+
+      {/* Section-level structural analysis */}
+      {mergedProfile?.sectionProfile && userResult && (
+        <SectionAnalysisView
+          referenceProfile={mergedProfile.sectionProfile}
+          deviations={sectionDeviations}
+          language={language}
+          userText={text}
+        />
+      )}
+
+      {/* Abstract structure diagnosis */}
+      {userResult && abstractAnalysis && (
+        <AbstractStructureView analysis={abstractAnalysis} language={language} />
       )}
 
       {/* Hint when profile exists but no user text analyzed */}

@@ -5,10 +5,12 @@ import { useAnalysis } from '@/hooks/useAnalysis';
 import { useStyleProfile } from '@/hooks/useStyleProfile';
 import { useLLMConfig } from '@/hooks/useLLMConfig';
 import { compareToProfile } from '@/engine/styleProfiler';
+import { computeParagraphScores } from '@/engine/paragraphReadability';
 import { Editor } from './Editor';
 import { ScoreBar } from './ScoreBar';
 import { Legend } from './Legend';
 import { AnnotatedText } from './AnnotatedText';
+import { ParagraphHeatmap } from './ParagraphHeatmap';
 import { IssuesList } from './IssuesList';
 import { Statistics } from './Statistics';
 import { LanguageSwitch } from './LanguageSwitch';
@@ -57,6 +59,12 @@ export function App() {
     if (!mergedProfile || !result || !text.trim()) return null;
     return compareToProfile(text, mergedProfile, language);
   }, [mergedProfile, result, text, language]);
+
+  // Compute paragraph-level readability scores
+  const paragraphScores = useMemo(() => {
+    if (!result || !text.trim()) return [];
+    return computeParagraphScores(text, language);
+  }, [result, text, language]);
 
   const handleAnalyze = useCallback(() => {
     analyze(language);
@@ -141,6 +149,9 @@ export function App() {
             <div role="tabpanel">
               <Legend language={language} />
               <AnnotatedText text={text} highlights={result.highlights} />
+              {paragraphScores.length > 1 && (
+                <ParagraphHeatmap scores={paragraphScores} language={language} />
+              )}
             </div>
           )}
 
@@ -162,6 +173,7 @@ export function App() {
                 originalText={text}
                 originalResult={result}
                 language={language}
+                referenceProfile={mergedProfile ?? undefined}
               />
             </div>
           )}

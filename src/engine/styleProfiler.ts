@@ -11,6 +11,7 @@ import type {
 } from '@/types';
 import { computeStats, splitSentences, countWords } from './stats';
 import { analyzeText } from './analyzer';
+import { analyzeSections, buildSectionProfile } from './sectionAnalyzer';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -134,6 +135,7 @@ export function extractStyleProfile(text: string, language: Language): StyleProf
     documentCount: 1,
     totalWords: wordCount,
     sentenceLengths: stats.sentenceLengths,
+    sectionProfile: buildSectionProfile([analyzeSections(text, language)]),
   };
 }
 
@@ -164,11 +166,53 @@ export function mergeProfiles(profiles: StyleProfile[]): StyleProfile {
     merged[key] = buildMetric(allSamples);
   }
 
+  // Merge section profiles if available
+  const sectionAnalyses = profiles
+    .filter((p) => p.sectionProfile)
+    .flatMap((p) =>
+      p.sectionProfile!.entries.map((e) => ({
+        sections: [{
+          name: e.section,
+          metrics: {
+            proportion: e.metrics.mean,
+            citationDensity: e.citationDensity.mean,
+            firstPersonFrequency: e.firstPersonFrequency.mean,
+            avgSentenceLength: e.avgSentenceLength.mean,
+          },
+        }],
+      })),
+    );
+  // Re-aggregate: collect all per-document values per section
+  const mergedSectionProfile = sectionAnalyses.length > 0
+    ? buildSectionProfile(
+        profiles
+          .filter((p) => p.sectionProfile)
+          .map((p) => {
+            // Reconstruct DocumentSectionAnalysis from stored profile
+            return {
+              sections: p.sectionProfile!.entries.map((e) =>
+                // Expand samples back out — each sample represents one document
+                e.metrics.samples.map((propVal, i) => ({
+                  name: e.section,
+                  metrics: {
+                    proportion: propVal,
+                    citationDensity: e.citationDensity.samples[i] ?? e.citationDensity.mean,
+                    firstPersonFrequency: e.firstPersonFrequency.samples[i] ?? e.firstPersonFrequency.mean,
+                    avgSentenceLength: e.avgSentenceLength.samples[i] ?? e.avgSentenceLength.mean,
+                  },
+                })),
+              ).flat(),
+            };
+          }),
+      )
+    : undefined;
+
   return {
     ...(merged as Pick<StyleProfile, StyleMetricKey>),
     documentCount: profiles.reduce((sum, p) => sum + p.documentCount, 0),
     totalWords: profiles.reduce((sum, p) => sum + p.totalWords, 0),
     sentenceLengths: profiles.flatMap((p) => p.sentenceLengths),
+    sectionProfile: mergedSectionProfile,
   };
 }
 

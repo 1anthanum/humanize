@@ -1381,6 +1381,325 @@ h1 {
   color: var(--info-text);
 }
 
+/* ── Section Structure Analysis ────────────────────────────────── */
+
+.section-analysis {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-analysis-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.section-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.section-bar-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.section-bars {
+  display: flex;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.section-bar-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+  transition: flex 0.3s ease;
+}
+
+.section-bar-segment:nth-child(1) { background: #dbeafe; }
+.section-bar-segment:nth-child(2) { background: #fef3c7; }
+.section-bar-segment:nth-child(3) { background: #dcfce7; }
+.section-bar-segment:nth-child(4) { background: #e0e7ff; }
+.section-bar-segment:nth-child(5) { background: #fce7f3; }
+.section-bar-segment:nth-child(6) { background: #f3e8ff; }
+.section-bar-segment:nth-child(7) { background: #ffedd5; }
+
+.section-bar-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.25rem;
+}
+
+.section-deviation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-deviation-subtitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.section-search-link {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.section-search-link:hover {
+  color: var(--info-text);
+  text-decoration: underline;
+}
+
+/* ── Abstract Structure ──────────────────────────────── */
+
+.abstract-structure {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.abstract-structure-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--text);
+}
+
+.abstract-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.abstract-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.abstract-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.abstract-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.abstract-move {
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.abstract-missing {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.abstract-missing strong {
+  color: #ef4444;
+}
+
+.abstract-missing ul {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.abstract-missing li {
+  margin-bottom: 0.25rem;
+}
+
+/* ── Paragraph Heatmap ──────────────────────────────── */
+
+.paragraph-heatmap {
+  margin-top: 1.5rem;
+}
+
+.paragraph-heatmap-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--text);
+}
+
+.paragraph-heatmap-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem 0;
+}
+
+.paragraph-heatmap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.paragraph-heatmap-item {
+  padding: 0.75rem;
+  border-left: 4px solid;
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.paragraph-heatmap-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.paragraph-heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.paragraph-heatmap-index {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.paragraph-heatmap-score {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.paragraph-heatmap-text {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.paragraph-heatmap-factors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── Style Diff Table ───────────────────────────────── */
+
+.style-diff {
+  margin-top: 1.5rem;
+}
+
+.style-diff-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--text);
+}
+
+.style-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.style-diff-table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--border);
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.style-diff-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.style-diff-label {
+  font-weight: 500;
+}
+
+.style-diff-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.style-diff-delta {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.style-diff-ref {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.style-diff-row.improved .style-diff-delta {
+  color: #22c55e;
+}
+
+.style-diff-row.worsened .style-diff-delta {
+  color: #ef4444;
+}
+
+.style-diff-row.unchanged .style-diff-delta {
+  color: var(--muted);
+}
+
+.style-diff-icon {
+  font-size: 1rem;
+}
+
+.style-diff-icon.improved {
+  color: #22c55e;
+}
+
+.style-diff-icon.worsened {
+  color: #ef4444;
+}
+
+.style-diff-icon.unchanged {
+  color: var(--muted);
+}
+
 @media (max-width: 640px) {
   .profile-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1410,5 +1729,9 @@ h1 {
 
   .preset-meta {
     margin-left: 0;
+  }
+
+  .section-bar-text {
+    font-size: 0.6rem;
   }
 }

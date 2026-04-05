@@ -99,10 +99,61 @@ export interface StyleProfile {
   totalWords: number;
   /** Raw sentence lengths across all source documents (for histogram) */
   sentenceLengths: number[];
+  /** Section-level structural profile (optional, null for legacy profiles) */
+  sectionProfile?: SectionProfile;
 }
 
 /** Style metric key names (excludes non-metric fields) */
-export type StyleMetricKey = Exclude<keyof StyleProfile, 'documentCount' | 'totalWords' | 'sentenceLengths'>;
+export type StyleMetricKey = Exclude<keyof StyleProfile, 'documentCount' | 'totalWords' | 'sentenceLengths' | 'sectionProfile'>;
+
+// ── Section-Level Analysis Types ────────────────────────────────────
+
+/** Canonical academic section names */
+export type SectionName =
+  | 'introduction'
+  | 'related_work'
+  | 'method'
+  | 'results'
+  | 'discussion'
+  | 'conclusion'
+  | 'abstract'
+  | 'other';
+
+/** Metrics for a single section */
+export interface SectionMetrics {
+  /** Proportion of total word count (0–1) */
+  proportion: number;
+  /** Citations per 1000 words */
+  citationDensity: number;
+  /** First-person pronouns ("we/our/us") per 1000 words */
+  firstPersonFrequency: number;
+  /** Average sentence length in this section */
+  avgSentenceLength: number;
+}
+
+/** Aggregated section metrics across multiple documents */
+export interface SectionProfileEntry {
+  section: SectionName;
+  metrics: StyleMetric; // proportion as the primary metric
+  citationDensity: StyleMetric;
+  firstPersonFrequency: StyleMetric;
+  avgSentenceLength: StyleMetric;
+}
+
+/** Complete section-level profile */
+export interface SectionProfile {
+  entries: SectionProfileEntry[];
+}
+
+/** Deviation in section structure vs reference */
+export interface SectionDeviation {
+  section: SectionName;
+  metric: 'proportion' | 'citationDensity' | 'firstPersonFrequency' | 'avgSentenceLength';
+  severity: DeviationSeverity;
+  level: DeviationLevel;
+  userValue: number;
+  referenceRange: { mean: number; lower: number; upper: number };
+}
 
 /** Deviation direction relative to reference range */
 export type DeviationLevel = 'within' | 'above' | 'below';
@@ -160,4 +211,74 @@ export interface RewriteResult {
   original: string;
   rewritten: string;
   explanation: string;
+}
+
+// ── Abstract Structure Types ──────────────────────────────────────────
+
+/** Rhetorical moves in an academic abstract (Swales/CARS model) */
+export type AbstractMove = 'background' | 'gap' | 'method' | 'result' | 'impact';
+
+/** A detected move within the abstract text */
+export interface AbstractMoveDetection {
+  move: AbstractMove;
+  /** Character start index within the abstract text */
+  startIdx: number;
+  /** Character end index within the abstract text */
+  endIdx: number;
+  /** Detection confidence (0–1) */
+  confidence: number;
+  /** The matched sentence text */
+  text: string;
+}
+
+/** Complete abstract structure analysis */
+export interface AbstractAnalysis {
+  /** Detected rhetorical moves */
+  moves: AbstractMoveDetection[];
+  /** Moves not found in the abstract */
+  missing: AbstractMove[];
+  /** The abstract text that was analyzed */
+  text: string;
+}
+
+// ── Paragraph Readability Types ───────────────────────────────────────
+
+/** Readability score for a single paragraph */
+export interface ParagraphScore {
+  /** Paragraph index (0-based) */
+  index: number;
+  /** The paragraph text */
+  text: string;
+  /** AI-likeness score (0–100, lower = more readable / less AI-like) */
+  score: number;
+  /** Breakdown of contributing factors */
+  factors: {
+    sentenceLength: number;
+    passiveRatio: number;
+    fillerDensity: number;
+    hedgeDensity: number;
+  };
+}
+
+// ── Style Metrics Diff Types ──────────────────────────────────────────
+
+/** Direction of change for a metric between original and revised */
+export type MetricDirection = 'improved' | 'worsened' | 'unchanged';
+
+/** Comparison of a single style metric between original and revised text */
+export interface MetricDiff {
+  /** Style metric key name */
+  metric: StyleMetricKey;
+  /** Label for display */
+  label: string;
+  /** Value in the original text */
+  originalValue: number;
+  /** Value in the revised text */
+  revisedValue: number;
+  /** Absolute delta (revised - original) */
+  delta: number;
+  /** Whether the change is an improvement, worsening, or unchanged */
+  direction: MetricDirection;
+  /** Reference mean value, if a style profile is available */
+  referenceValue?: number;
 }
