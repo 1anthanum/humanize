@@ -193,11 +193,16 @@ function generateIssues(
   }
 
   if (counts.passive > 3 && stats.sentenceCount > 0 && counts.passive / stats.sentenceCount > 0.3) {
+    // Show ratio when >1 passive per sentence, otherwise percentage
+    const passiveRatio = counts.passive / stats.sentenceCount;
+    const passiveDisplay = passiveRatio > 1
+      ? (isZh ? `${passiveRatio.toFixed(1)}处/句` : `${passiveRatio.toFixed(1)} per sentence`)
+      : (isZh ? `${Math.round(passiveRatio * 100)}%` : `${Math.round(passiveRatio * 100)}% of sentences`);
     issues.push({
       severity: 'medium',
       title: isZh
-        ? `被动语态使用率偏高 (${Math.round((counts.passive / stats.sentenceCount) * 100)}%)`
-        : `High passive voice usage (${Math.round((counts.passive / stats.sentenceCount) * 100)}% of sentences)`,
+        ? `被动语态使用率偏高 (${passiveDisplay})`
+        : `High passive voice usage (${passiveDisplay})`,
       description: isZh
         ? '学术写作中适量被动语态是正常的，但过多会造成距离感，模糊行为主体。'
         : 'Some passive voice is normal in academic writing, but excessive use creates distance.',
@@ -274,9 +279,10 @@ export function analyzeText(text: string, language: Language = 'en'): AnalysisRe
     ...findEnumeration(text, language),
   ];
 
-  // Second pass: soft fillers only included when 2+ strong signals exist
+  // Second pass: soft fillers only included when co-occurring with other signals.
+  // Gate: need 2+ strong signals OR 2+ soft matches (buzzword cluster = signal)
   const softMatches = findMatches(text, patterns.softFiller, 'filler');
-  const allHighlights = strongHighlights.length >= 2
+  const allHighlights = strongHighlights.length >= 2 || softMatches.length >= 2
     ? [...strongHighlights, ...softMatches]
     : strongHighlights;
 

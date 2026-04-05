@@ -192,11 +192,44 @@ describe('analyzeText', () => {
       expect(softHits.length).toBeGreaterThan(0);
     });
 
+    it('DOES flag soft fillers when multiple buzzwords co-occur (no strong signals needed)', () => {
+      const text =
+        'Unlock your full potential with our revolutionary AI-powered productivity suite. Designed to seamlessly integrate into your existing workflow, our cutting-edge platform empowers teams to streamline operations.';
+      const result = analyzeText(text, 'en');
+      const softHits = result.highlights.filter((h) =>
+        ['seamlessly', 'cutting-edge', 'empowers', 'revolutionary', 'streamline'].some((w) =>
+          h.text.toLowerCase().includes(w),
+        ),
+      );
+      expect(softHits.length).toBeGreaterThanOrEqual(2);
+    });
+
     it('does NOT flag Chinese soft fillers alone', () => {
       const text = '这次数字化转型帮助了很多企业。';
       const result = analyzeText(text, 'zh');
       const softHit = result.highlights.find((h) => h.text.includes('转型'));
       expect(softHit).toBeUndefined();
+    });
+  });
+
+  describe('passive voice display', () => {
+    it('does not show >100% for passive voice when constructions exceed sentence count', () => {
+      const text =
+        'The experiment was conducted carefully. The data was collected and was subsequently analyzed. The result was found to be significant. The paper was reviewed and was published.';
+      const result = analyzeText(text, 'en');
+      const passiveIssue = result.issues.find((i) => i.title.includes('passive'));
+      if (passiveIssue) {
+        // Should not contain a percentage > 100
+        const percentMatch = passiveIssue.title.match(/(\d+)%/);
+        if (percentMatch) {
+          expect(Number(percentMatch[1])).toBeLessThanOrEqual(100);
+        }
+        // Or should use "per sentence" format
+        const ratioMatch = passiveIssue.title.match(/(\d+\.?\d*) per sentence/);
+        if (ratioMatch) {
+          expect(Number(ratioMatch[1])).toBeGreaterThan(0);
+        }
+      }
     });
   });
 
