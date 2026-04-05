@@ -43,6 +43,16 @@ export function calculateScore(
     score += Math.min((counts.template - 2) * 5, 10);
   }
 
+  // Short text density boost: when text is short but marker-per-sentence
+  // ratio is high, the absolute-count bonuses above underfire.
+  // Boost score proportionally to markers-per-sentence density.
+  if (stats.wordCount < 60 && stats.sentenceCount > 0 && stats.sentenceCount <= 3) {
+    const markersPerSentence = totalHighlights / stats.sentenceCount;
+    if (markersPerSentence > 1) {
+      score += Math.min((markersPerSentence - 1) * 12, 20);
+    }
+  }
+
   return Math.round(Math.min(100, Math.max(0, score)));
 }
 

@@ -144,6 +144,32 @@ describe('analyzeText', () => {
     });
   });
 
+  describe('ChatGPT conversational patterns', () => {
+    it('detects "Great question!" opener', () => {
+      const text = 'Great question! The answer depends on several factors.';
+      const result = analyzeText(text, 'en');
+      expect(result.counts.filler).toBeGreaterThanOrEqual(1);
+    });
+
+    it('detects "I hope this helps" closing', () => {
+      const text = 'The key difference is scope. I hope this helps clarify things.';
+      const result = analyzeText(text, 'en');
+      expect(result.counts.filler).toBeGreaterThanOrEqual(1);
+    });
+
+    it('detects "Here\'s how it works:" framing', () => {
+      const text = "Here's how it works: the system processes data in batches.";
+      const result = analyzeText(text, 'en');
+      expect(result.counts.filler).toBeGreaterThanOrEqual(1);
+    });
+
+    it('detects "Feel free to ask" closing', () => {
+      const text = 'That covers the basics. Feel free to ask if you have more questions.';
+      const result = analyzeText(text, 'en');
+      expect(result.counts.filler).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   describe('AI code explanation patterns', () => {
     it('detects "It works by iterating" pattern', () => {
       const text = 'It works by iterating through each element in the array.';
@@ -190,6 +216,14 @@ describe('analyzeText', () => {
         ),
       );
       expect(softHits.length).toBeGreaterThan(0);
+    });
+
+    it('matches "leveraging" word form (not just "leverage")', () => {
+      // Need 2+ soft matches to trigger gating
+      const text = 'By leveraging innovative techniques, the team achieved seamless integration.';
+      const result = analyzeText(text, 'en');
+      const leverageHit = result.highlights.find((h) => h.text.toLowerCase().includes('leverag'));
+      expect(leverageHit).toBeDefined();
     });
 
     it('DOES flag soft fillers when multiple buzzwords co-occur (no strong signals needed)', () => {

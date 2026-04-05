@@ -61,6 +61,31 @@ export const EN_PATTERNS: PatternSet = {
       tip: 'Mechanical transition — your conclusion should be clear from context',
     },
     { re: /\bto summarize\b/gi, tip: 'Mechanical — let your summary speak for itself' },
+    // ChatGPT conversational patterns
+    {
+      re: /\b(?:Great|That'?s a great|Excellent|Fantastic) question(?:!|\b)/gi,
+      tip: "ChatGPT-typical opener — skip the affirmation and answer directly",
+    },
+    {
+      re: /\bAbsolutely[!.]/gi,
+      tip: "AI-typical enthusiastic affirmation — just state your point",
+    },
+    {
+      re: /\bHere'?s (?:how it works|a (?:quick )?(?:breakdown|summary|overview|rundown)|the (?:thing|deal))[.:!]/gi,
+      tip: "ChatGPT-typical framing — start with the content, not the setup",
+    },
+    {
+      re: /\bI hope (?:this|that) (?:helps|clarifies|makes sense|answers)\b/gi,
+      tip: 'ChatGPT-typical closing — remove or replace with a specific next step',
+    },
+    {
+      re: /\bFeel free to (?:ask|reach out|let me know)\b/gi,
+      tip: 'ChatGPT-typical closing — be specific about what to do next',
+    },
+    {
+      re: /\bLet me (?:explain|clarify|elaborate)\b/gi,
+      tip: "AI-typical narration — just explain, don't announce it",
+    },
   ],
 
   hedge: [
@@ -108,6 +133,7 @@ export const EN_PATTERNS: PatternSet = {
     { re: /\bWith (?:this|that) in mind\b/gi, tip: 'AI-typical bridge — often removable' },
     { re: /\bThat being said,?\b/gi, tip: "Filler transition — try 'But' or 'However'" },
     { re: /\bHaving said that,?\b/gi, tip: 'Filler transition — simplify' },
+    { re: /\bUltimately,?\b/g, tip: 'AI-typical concluding word — let your conclusion speak for itself' },
   ],
 
   template: [
@@ -173,7 +199,7 @@ export const EN_PATTERNS: PatternSet = {
       tip: "'delve' is heavily associated with AI text — use 'examine' or 'explore'",
     },
     {
-      re: /\bleverage\b/gi,
+      re: /\bleverag(?:e|es|ed|ing)\b/gi,
       tip: "'leverage' as a verb is AI-typical — try 'use', 'apply', or 'build on'",
     },
     {
@@ -234,7 +260,7 @@ export const EN_PATTERNS: PatternSet = {
       tip: "'innovative' is overused — describe what's novel specifically",
     },
     {
-      re: /\bstreamline(?:s|d)?\b/gi,
+      re: /\bstreamlin(?:e|es|ed|ing)\b/gi,
       tip: "'streamline' is AI-typical — describe the specific efficiency gain",
     },
     {
@@ -244,6 +270,18 @@ export const EN_PATTERNS: PatternSet = {
     {
       re: /\bnext[- ]?gen(?:eration)?\b/gi,
       tip: 'Marketing filler — describe the actual advancement',
+    },
+    {
+      re: /\beffortless(?:ly)?\b/gi,
+      tip: "'effortless' is AI-marketing speak — describe the actual user experience",
+    },
+    {
+      re: /\bscalable\b/gi,
+      tip: "'scalable' is vague — specify the actual capacity or growth metric",
+    },
+    {
+      re: /\bdynamic\b/gi,
+      tip: "'dynamic' is overused — describe what actually changes and how",
     },
   ],
 };
