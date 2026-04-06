@@ -40,7 +40,8 @@ export function useLLMConfig() {
     });
   }, []);
 
-  const isConfigured = config.apiKey.length > 0 && config.proxyUrl.length > 0;
+  // Only proxyUrl is required — public mode works without apiKey
+  const isConfigured = config.proxyUrl.length > 0;
 
   return { config, setConfig, isConfigured };
 }

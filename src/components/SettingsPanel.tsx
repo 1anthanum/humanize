@@ -77,9 +77,14 @@ export function SettingsPanel({ config, onUpdate, language }: SettingsPanelProps
         </select>
       </div>
 
-      {config.apiKey && config.proxyUrl && (
+      {config.proxyUrl && config.apiKey && (
         <div className="settings-status settings-status-ok">
           ✓ {t('settings.configured', language)}
+        </div>
+      )}
+      {config.proxyUrl && !config.apiKey && (
+        <div className="settings-status settings-status-ok">
+          ✓ {t('settings.publicMode', language)}
         </div>
       )}
     </div>

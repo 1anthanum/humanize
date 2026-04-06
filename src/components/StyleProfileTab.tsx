@@ -136,6 +136,24 @@ export function StyleProfileTab({
         <StyleDeviationView analysis={styleDeviations} language={language} />
       )}
 
+      {/* LLM Rewrite section — placed right after deviations for easy access */}
+      {styleDeviations && styleDeviations.deviations.length > 0 && (
+        <div className="rewrite-section-wrapper">
+          <SettingsPanel
+            config={llmConfig}
+            onUpdate={onLLMConfigUpdate}
+            language={language}
+          />
+          <RewritePanel
+            text={text}
+            deviations={styleDeviations.deviations}
+            config={llmConfig}
+            isConfigured={isLLMConfigured}
+            language={language}
+          />
+        </div>
+      )}
+
       {/* Section-level structural analysis */}
       {mergedProfile?.sectionProfile && userResult && (
         <SectionAnalysisView
@@ -155,24 +173,6 @@ export function StyleProfileTab({
       {mergedProfile && !userResult && (
         <div className="style-hint">
           <p>{t('style.hint.analyzeFirst', language)}</p>
-        </div>
-      )}
-
-      {/* LLM Rewrite section — shown when deviations exist */}
-      {styleDeviations && styleDeviations.deviations.length > 0 && (
-        <div className="rewrite-section-wrapper">
-          <SettingsPanel
-            config={llmConfig}
-            onUpdate={onLLMConfigUpdate}
-            language={language}
-          />
-          <RewritePanel
-            text={text}
-            deviations={styleDeviations.deviations}
-            config={llmConfig}
-            isConfigured={isLLMConfigured}
-            language={language}
-          />
         </div>
       )}
     </div>

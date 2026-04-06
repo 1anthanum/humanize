@@ -12,6 +12,11 @@ interface AnthropicResponse {
 
 /**
  * Call Anthropic Messages API via CORS proxy.
+ *
+ * Two modes:
+ *   - BYOK: user provides apiKey → sent as x-api-key header
+ *   - Public: no apiKey → proxy uses its own server-side key (rate-limited)
+ *
  * The proxy URL should point to a Cloudflare Worker or similar
  * that forwards requests to https://api.anthropic.com.
  */
@@ -22,19 +27,23 @@ export async function callAnthropic(
 ): Promise<string> {
   const { apiKey, model, proxyUrl } = config;
 
-  if (!apiKey) throw new Error('API key not configured');
   if (!proxyUrl) throw new Error('Proxy URL not configured');
 
   // Ensure proxyUrl doesn't end with slash
   const base = proxyUrl.replace(/\/+$/, '');
 
+  // Build headers — omit x-api-key for public mode (worker provides its own)
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'anthropic-version': '2023-06-01',
+  };
+  if (apiKey) {
+    headers['x-api-key'] = apiKey;
+  }
+
   const response = await fetch(`${base}/v1/messages`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
+    headers,
     body: JSON.stringify({
       model,
       max_tokens: 1024,
