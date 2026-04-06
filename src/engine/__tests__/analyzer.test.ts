@@ -246,6 +246,41 @@ describe('analyzeText', () => {
     });
   });
 
+  describe('academic conclusion clichés', () => {
+    it('detects "novel framework" and "promising directions" as soft fillers when co-occurring', () => {
+      const text =
+        'We propose a novel framework for distributed optimization. Our results show promising directions for future scalable systems.';
+      const result = analyzeText(text, 'en');
+      const novelHit = result.highlights.find((h) => h.text.toLowerCase().includes('novel framework'));
+      const promHit = result.highlights.find((h) => h.text.toLowerCase().includes('promising direction'));
+      expect(novelHit).toBeDefined();
+      expect(promHit).toBeDefined();
+    });
+
+    it('detects "not without limitations" as a template pattern', () => {
+      const text =
+        'While our approach achieves strong results, it is not without its limitations. Furthermore, the training time remains significant.';
+      const result = analyzeText(text, 'en');
+      const limitHit = result.highlights.find((h) => h.text.toLowerCase().includes('not without'));
+      expect(limitHit).toBeDefined();
+    });
+
+    it('detects "valuable insights" and "solid foundation" when co-occurring', () => {
+      const text =
+        'This study provides valuable insights into deep learning optimization. The findings lay a solid foundation for future research in this rapidly evolving field.';
+      const result = analyzeText(text, 'en');
+      const valHit = result.highlights.find((h) => h.text.toLowerCase().includes('valuable insight'));
+      expect(valHit).toBeDefined();
+    });
+
+    it('does NOT flag a single conclusion cliché in isolation', () => {
+      const text = 'The proposed novel framework achieves 95.3% accuracy on the test set.';
+      const result = analyzeText(text, 'en');
+      const novelHit = result.highlights.find((h) => h.text.toLowerCase().includes('novel framework'));
+      expect(novelHit).toBeUndefined();
+    });
+  });
+
   describe('passive voice display', () => {
     it('does not show >100% for passive voice when constructions exceed sentence count', () => {
       const text =

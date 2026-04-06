@@ -191,6 +191,11 @@ export const EN_PATTERNS: PatternSet = {
       re: /\bAs (?:you can|we can) see\b/gi,
       tip: 'Filler — the reader can already see; state the point',
     },
+    // AI disclaimer / limitation patterns
+    {
+      re: /\b(?:is |are )?not without (?:its |their )?limitations?\b/gi,
+      tip: 'AI disclaimer template — state the specific limitations directly',
+    },
   ],
 
   softFiller: [
@@ -282,6 +287,31 @@ export const EN_PATTERNS: PatternSet = {
     {
       re: /\bdynamic\b/gi,
       tip: "'dynamic' is overused — describe what actually changes and how",
+    },
+    // Academic conclusion clichés (common in AI-generated paper endings)
+    {
+      re: /\bnovel (?:framework|approach|method|technique|architecture|paradigm)\b/gi,
+      tip: "'novel framework' is AI-academic boilerplate — describe what makes it novel",
+    },
+    {
+      re: /\bpromising (?:direction|avenue|result|approach|finding)s?\b/gi,
+      tip: "'promising directions' is AI future-work filler — name the specific next steps",
+    },
+    {
+      re: /\bexciting (?:avenue|direction|opportunit|possibilit|frontier)(?:y|ies|s)?\b/gi,
+      tip: "'exciting avenues' is AI-typical enthusiasm — let the opportunities speak for themselves",
+    },
+    {
+      re: /\brapidly evolving (?:field|landscape|domain|area)\b/gi,
+      tip: "'rapidly evolving field' is AI closing cliché — cite specific recent developments",
+    },
+    {
+      re: /\bvaluable (?:insight|contribution|addition|resource)s?\b/gi,
+      tip: "'valuable insights' is AI results filler — state the specific contribution",
+    },
+    {
+      re: /\bsolid (?:foundation|basis|groundwork)\b/gi,
+      tip: "'solid foundation' is AI conclusion cliché — describe the specific underpinning",
     },
   ],
 };
