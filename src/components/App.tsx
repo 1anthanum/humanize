@@ -93,9 +93,9 @@ export function App() {
 
   const handleRemovePDF = useCallback(
     (index: number) => {
-      removePDF(index, language);
+      removePDF(index);
     },
-    [removePDF, language],
+    [removePDF],
   );
 
   return (

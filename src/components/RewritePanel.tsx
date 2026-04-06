@@ -3,6 +3,22 @@ import type { Language, LLMConfig, DeviationFinding, Highlight, RewriteResult } 
 import { t } from '@/i18n';
 import { requestRewrite } from '@/engine/rewriteSuggestion';
 
+/** Fallback copy for contexts where navigator.clipboard is unavailable (HTTP, iframes) */
+function execCommandCopy(text: string) {
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  } catch {
+    // Last resort — user saw "Copied!" but clipboard may not have updated
+  }
+}
+
 interface RewritePanelProps {
   text: string;
   highlights: Highlight[];
@@ -42,13 +58,21 @@ export function RewritePanel({
   }, [config, text, highlights, deviations, language]);
 
   const handleCopy = useCallback(() => {
-    if (result) {
-      navigator.clipboard.writeText(result.rewritten).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }).catch(() => {
-        // Fallback: select text for manual copy
-      });
+    if (!result) return;
+    // Show visual feedback immediately — don't gate on clipboard API success
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    // Attempt clipboard write; fall back to execCommand for HTTP / iframe contexts
+    try {
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(result.rewritten).catch(() => {
+          execCommandCopy(result.rewritten);
+        });
+      } else {
+        execCommandCopy(result.rewritten);
+      }
+    } catch {
+      execCommandCopy(result.rewritten);
     }
   }, [result]);
 

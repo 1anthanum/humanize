@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Language, AnalysisResult, StyleProfile, StyleDeviationAnalysis, LLMConfig, StylePreset } from '@/types';
 import type { SectionDeviation } from '@/types';
 import { t } from '@/i18n';
@@ -61,6 +61,8 @@ export function StyleProfileTab({
   onLoadPreset,
   activePresetName,
 }: StyleProfileTabProps) {
+  const [refExpanded, setRefExpanded] = useState(true);
+
   // Compute section-level deviations when both reference and user data exist
   const sectionDeviations = useMemo<SectionDeviation[]>(() => {
     if (!mergedProfile?.sectionProfile || !userResult || !text) return [];
@@ -82,6 +84,9 @@ export function StyleProfileTab({
     }
   }, [text, userResult, language]);
 
+  // Whether reference diagnostics section has content to show
+  const hasRefContent = !!mergedProfile;
+
   return (
     <div className="style-profile-tab">
       {/* Preset selector — load/save style profiles */}
@@ -99,44 +104,7 @@ export function StyleProfileTab({
         </div>
       )}
 
-      {/* Upload section — always visible so user can add more PDFs */}
-      <PDFUploader language={language} isProcessing={isProcessing} onUpload={onUpload} />
-
-      {/* Error display */}
-      {error && (
-        <div className="style-error">
-          {error.split('\n').map((line, i) => (
-            <div key={i}>{line}</div>
-          ))}
-        </div>
-      )}
-
-      {/* Profile summary — shown when at least one PDF is processed */}
-      {mergedProfile && (
-        <ProfileSummary
-          profile={mergedProfile}
-          language={language}
-          uploadedPDFs={uploadedPDFs}
-          onRemovePDF={onRemovePDF}
-          onClear={onClear}
-        />
-      )}
-
-      {/* Sentence length histogram — shown when profile exists */}
-      {mergedProfile && mergedProfile.sentenceLengths.length > 0 && (
-        <SentenceLengthChart
-          referenceLengths={mergedProfile.sentenceLengths}
-          userLengths={userResult?.stats.sentenceLengths}
-          language={language}
-        />
-      )}
-
-      {/* Deviation diagnostics — shown when both profile and user analysis exist */}
-      {mergedProfile && userResult && styleDeviations && (
-        <StyleDeviationView analysis={styleDeviations} language={language} />
-      )}
-
-      {/* LLM Rewrite section — only when AI highlights exist (the rewrite targets AI patterns) */}
+      {/* ── LLM Rewrite section — placed at top for immediate access ── */}
       {userResult && userResult.highlights.length > 0 && (
         <div className="rewrite-section-wrapper">
           <SettingsPanel
@@ -155,19 +123,86 @@ export function StyleProfileTab({
         </div>
       )}
 
-      {/* Section-level structural analysis */}
-      {mergedProfile?.sectionProfile && userResult && (
-        <SectionAnalysisView
-          referenceProfile={mergedProfile.sectionProfile}
-          deviations={sectionDeviations}
-          language={language}
-          userText={text}
-        />
+      {/* ── Reference Profile Section (collapsible) ── */}
+      {hasRefContent && (
+        <div className="ref-section">
+          <button
+            className="ref-section-toggle"
+            onClick={() => setRefExpanded(!refExpanded)}
+            aria-expanded={refExpanded}
+          >
+            <span className="ref-section-arrow">{refExpanded ? '▼' : '▶'}</span>
+            <span className="ref-section-label">
+              {language === 'zh' ? '参考文献分析' : 'Reference Analysis'}
+            </span>
+            {!refExpanded && mergedProfile && (
+              <span className="ref-section-summary">
+                {mergedProfile.documentCount} {language === 'zh' ? '篇' : 'docs'} · {mergedProfile.totalWords.toLocaleString()} {language === 'zh' ? '词' : 'words'}
+              </span>
+            )}
+          </button>
+
+          {refExpanded && (
+            <div className="ref-section-content">
+              {/* Upload section */}
+              <PDFUploader language={language} isProcessing={isProcessing} onUpload={onUpload} />
+
+              {/* Error display */}
+              {error && (
+                <div className="style-error">
+                  {error.split('\n').map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </div>
+              )}
+
+              {/* Profile summary */}
+              {mergedProfile && (
+                <ProfileSummary
+                  profile={mergedProfile}
+                  language={language}
+                  uploadedPDFs={uploadedPDFs}
+                  onRemovePDF={onRemovePDF}
+                  onClear={onClear}
+                />
+              )}
+
+              {/* Sentence length histogram */}
+              {mergedProfile && mergedProfile.sentenceLengths.length > 0 && (
+                <SentenceLengthChart
+                  referenceLengths={mergedProfile.sentenceLengths}
+                  userLengths={userResult?.stats.sentenceLengths}
+                  language={language}
+                />
+              )}
+
+              {/* Deviation diagnostics */}
+              {mergedProfile && userResult && styleDeviations && (
+                <StyleDeviationView analysis={styleDeviations} language={language} />
+              )}
+
+              {/* Section-level structural analysis */}
+              {mergedProfile?.sectionProfile && userResult && (
+                <SectionAnalysisView
+                  referenceProfile={mergedProfile.sectionProfile}
+                  deviations={sectionDeviations}
+                  language={language}
+                  userText={text}
+                />
+              )}
+
+              {/* Abstract structure diagnosis */}
+              {userResult && abstractAnalysis && (
+                <AbstractStructureView analysis={abstractAnalysis} language={language} />
+              )}
+            </div>
+          )}
+        </div>
       )}
 
-      {/* Abstract structure diagnosis */}
-      {userResult && abstractAnalysis && (
-        <AbstractStructureView analysis={abstractAnalysis} language={language} />
+      {/* Upload section when no profile exists yet */}
+      {!hasRefContent && (
+        <PDFUploader language={language} isProcessing={isProcessing} onUpload={onUpload} />
       )}
 
       {/* Hint when profile exists but no user text analyzed */}
