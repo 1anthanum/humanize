@@ -30,7 +30,6 @@ function escapeHtml(s: string): string {
 export function AbstractStructureView({ analysis, language }: AbstractStructureViewProps) {
   const annotatedHtml = useMemo(() => {
     if (!analysis) return '';
-
     if (analysis.moves.length === 0) return escapeHtml(analysis.text);
 
     // Sort moves by startIdx

@@ -60,7 +60,7 @@ interface UseStyleProfileReturn {
   /** Add one or more PDF files */
   addPDFs: (files: File[], language: Language) => Promise<void>;
   /** Remove a specific PDF by index */
-  removePDF: (index: number) => void;
+  removePDF: (index: number, language: Language) => void;
   /** Clear all profiles */
   clearProfiles: () => void;
   /** Whether a profile is available */
@@ -150,7 +150,8 @@ export function useStyleProfile(): UseStyleProfileReturn {
   );
 
   const removePDF = useCallback(
-    (index: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (index: number, _language: Language) => {
       setProfiles((prev) => {
         const updated = prev.filter((_, i) => i !== index);
         setMergedProfile(updated.length > 0 ? mergeProfiles(updated) : null);
