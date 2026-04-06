@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
-import type { Language, LLMConfig, DeviationFinding, RewriteResult } from '@/types';
+import type { Language, LLMConfig, DeviationFinding, Highlight, RewriteResult } from '@/types';
 import { t } from '@/i18n';
 import { requestRewrite } from '@/engine/rewriteSuggestion';
 
 interface RewritePanelProps {
   text: string;
+  highlights: Highlight[];
   deviations: DeviationFinding[];
   config: LLMConfig;
   isConfigured: boolean;
@@ -13,6 +14,7 @@ interface RewritePanelProps {
 
 export function RewritePanel({
   text,
+  highlights,
   deviations,
   config,
   isConfigured,
@@ -21,25 +23,30 @@ export function RewritePanel({
   const [result, setResult] = useState<RewriteResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleRewrite = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setCopied(false);
 
     try {
-      const rewrite = await requestRewrite(config, text, deviations, language);
+      const rewrite = await requestRewrite(config, text, highlights, deviations, language);
       setResult(rewrite);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setIsLoading(false);
     }
-  }, [config, text, deviations, language]);
+  }, [config, text, highlights, deviations, language]);
 
   const handleCopy = useCallback(() => {
     if (result) {
-      navigator.clipboard.writeText(result.rewritten).catch(() => {
+      navigator.clipboard.writeText(result.rewritten).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => {
         // Fallback: select text for manual copy
       });
     }
@@ -53,7 +60,7 @@ export function RewritePanel({
     );
   }
 
-  if (deviations.length === 0) return null;
+  if (highlights.length === 0 && deviations.length === 0) return null;
 
   return (
     <div className="rewrite-panel">
@@ -80,7 +87,9 @@ export function RewritePanel({
             <div className="rewrite-section-label">{t('rewrite.result', language)}</div>
             <div className="rewrite-text">{result.rewritten}</div>
             <button className="btn btn-ghost btn-sm rewrite-copy" onClick={handleCopy}>
-              {t('rewrite.copy', language)}
+              {copied
+                ? (language === 'zh' ? '✓ 已复制' : '✓ Copied!')
+                : t('rewrite.copy', language)}
             </button>
           </div>
 

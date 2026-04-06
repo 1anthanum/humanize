@@ -137,7 +137,8 @@ export function StyleProfileTab({
       )}
 
       {/* LLM Rewrite section — placed right after deviations for easy access */}
-      {styleDeviations && styleDeviations.deviations.length > 0 && (
+      {/* Show when there are AI highlights OR style deviations to address */}
+      {userResult && ((userResult.highlights.length > 0) || (styleDeviations && styleDeviations.deviations.length > 0)) && (
         <div className="rewrite-section-wrapper">
           <SettingsPanel
             config={llmConfig}
@@ -146,7 +147,8 @@ export function StyleProfileTab({
           />
           <RewritePanel
             text={text}
-            deviations={styleDeviations.deviations}
+            highlights={userResult.highlights}
+            deviations={styleDeviations?.deviations ?? []}
             config={llmConfig}
             isConfigured={isLLMConfigured}
             language={language}
