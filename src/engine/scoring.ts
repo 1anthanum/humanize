@@ -17,11 +17,30 @@ export function calculateScore(
 ): number {
   if (stats.wordCount === 0) return 0;
 
+  // --- Passive-only dampening ---
+  // When highlights are overwhelmingly passive voice with minimal other AI
+  // signals, passive alone is a weak AI indicator (standard in academic
+  // methodology, technical docs, formal reports).  Halve passive contribution
+  // to the density calculation so these texts aren't over-scored.
+  const nonPassiveSignals = counts.filler + counts.hedge + counts.connector + counts.template;
+  let effectiveHighlights = totalHighlights;
+  if (nonPassiveSignals <= 1 && counts.passive >= 3) {
+    effectiveHighlights = nonPassiveSignals + Math.ceil(counts.passive * 0.5);
+  }
+
   let score = 0;
 
-  // Pattern density: total highlights relative to word count
-  const density = (totalHighlights / stats.wordCount) * 100;
+  // Pattern density: effective highlights relative to word count
+  const density = (effectiveHighlights / stats.wordCount) * 100;
   score += Math.min(density * 8, 40);
+
+  // High-density bonus: when marker density exceeds 5%, the base density
+  // component is already capped at 40.  Add a graduated bonus so heavily
+  // AI-generated text (1 marker per 10–15 words) scores 85+ instead of
+  // plateauing at ~75.
+  if (density > 5) {
+    score += Math.min((density - 5) * 3, 12);
+  }
 
   // Sentence uniformity: low CV means sentences are very similar in length
   if (stats.sentenceCount > 3) {
